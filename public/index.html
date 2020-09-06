@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Chatterbox</title>
+    <link rel="stylesheet" href="/css/bootstrap.css" charset="utf-8">
+</head>
+<body>
+    <div style="max-width: 1000px; margin: auto; margin-top: 3vh;">
+        <h1 style="text-align: center;">Chatterbox</h1>
+        <pre id="messages" style="height:400px; overflow: scroll;"></pre>
+        <input type="text" id="inputBox" placeholder="Please Type Here" style="display: block; width: 100%; margin-bottom: 7px; padding: 7px;"/>
+        <div style="text-align: center;">
+            <button class="btn btn-primary" id="send" type="submit">Send Message</button>
+        </div>
+    </div>
+    <script src="js/jquery.cookie.js" charset="utf-8"></script>
+    <script src="js/jquery.js" charset="utf-8"></script>
+    <script src="js/socket.io.js" charset="utf-8"></script>
+    <script>
+        (function () {
+            var socket = io();
+            const button = document.querySelector('#send');
+            const messages = document.querySelector('#messages');
+            const input = document.querySelector('#inputBox');
+
+            // Listens for a return keypress which simulates a button click
+            input.addEventListener("keypress", function(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    button.click();
+                }
+            });
+            
+            // Sends message info to server when button is clicked
+            button.onclick = function() {
+                socket.emit("message", input.value);
+                messages.textContent += `${input.value}\n\n`;
+                input.value = '';
+            }
+
+            // Adds message to message box when message is sent to client
+            socket.on("message", function(msg) {
+                messages.textContent += `${msg}\n\n`;
+            });
+        })();
+    </script>
+</body>
+</html>
