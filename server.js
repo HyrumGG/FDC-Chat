@@ -7,14 +7,15 @@ http.listen(3000);
 
 app.use(express.static("public"));
 
-MongoClient.connect(process.env.MONGODB_URI, function(err, client) {
+const uri = "mongodb+srv://admin:FCXuaT7DA45SM4N@cluster0.il8as.mongodb.net/messages?retryWrites=true&w=majority";
+
+MongoClient.connect(uri, function(err, client) {
     const db = client.db('messages');
     
     io.sockets.on("connection", function(socket) {
         console.log('User Connected');
         socket.on("message", function(msg) {
-            console.log('message: '+msg);
-            messageHist.insertOne({text:message});
+            db.insertOne({text:message});
             socket.broadcast.emit("message", msg);
         });
     })
