@@ -95,12 +95,6 @@
                 });
             })
 
-            socket.on("retrievePast", function(docs) {
-                $.each(docs, function() {
-                    messages.textContent += `${this.text}\n\n`;
-                });
-            });
-
             socket.on("connect", function() {
                 if (document.cookie !== "") {
                     username = document.cookie;
