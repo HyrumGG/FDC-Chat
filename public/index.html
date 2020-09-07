@@ -83,10 +83,12 @@
             
             // Sends message info to server when button is clicked
             button.onclick = function() {
-                var msg = `${username}: ${input.value}`;
-                socket.emit("message", msg);
-                messages.textContent += `${msg}\n\n`;
-                input.value = '';
+                if (/\S/.test(input.value)) {
+                    var msg = `${username}: ${input.value}`;
+                    socket.emit("message", msg);
+                    messages.textContent += `${msg}\n\n`;
+                    input.value = '';
+                }
             }
 
             // Adds message to message box when message is sent to client
