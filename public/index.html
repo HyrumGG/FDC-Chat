@@ -30,8 +30,24 @@
         var loggedIn;
         const users = document.querySelector('#users');
 
+        function getCookie(cname) {
+            var name = cname + "=";
+            var decodedCookie = decodeURIComponent(document.cookie);
+            var ca = decodedCookie.split(';');
+            for(var i = 0; i <ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+                }
+            }
+            return "";
+        }
+
         function userClick (name) {
-                document.cookie = name;
+                document.cookie = `username=${name}`;
                 socket.emit("username", name);
                 users.textContent = "";
                 socket.emit("GetClients", null, function(clients) {
@@ -96,15 +112,16 @@
             })
 
             socket.on("connect", function() {
-                if (document.cookie !== "") {
-                    username = document.cookie;
+                var name = getCookie("username");
+                if (name !== "") {
+                    username = name;
                     socket.emit("username", username);
                     users.textContent = "";
                     socket.emit("GetClients", null, function(clients) {
-                    $.each(clients, function() {
-                        users.textContent += `${this.username}\n\n`;
+                        $.each(clients, function() {
+                            users.textContent += `${this.username}\n\n`;
+                        });
                     });
-                });
                     loggedIn = true;
                     iframe.parentNode.removeChild(iframe);
                 } else {
