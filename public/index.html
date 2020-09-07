@@ -2,40 +2,73 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Chatterbox</title>
+    <title>FDC Chat</title>
     <link rel="stylesheet" href="/css/bootstrap.css" charset="utf-8">
+    
 </head>
 <body>
+    <iframe id="ifrm" style="height:900px;width:100%;position:fixed;top:0px;left:0px;z-index:40" src=""></iframe>
     <div style="max-width: 1000px; margin: auto; margin-top: 3vh;">
-        <h1 style="text-align: center;">Chatterbox</h1>
-        <pre id="messages" style="height:400px; overflow: scroll;"></pre>
+        <h1 style="text-align: center;">FDC Chat</h1>
+        <div>
+            <div>
+                <h5 style="margin-left: 25px; margin-top:20px; margin-bottom:20px;">Connected Users</h5>
+                <pre id="users" style="height:600px; width:200px; overflow-y:scroll; text-align:center; float:left; margin-right: 20px;"></pre>
+            </div>
+            <pre id="messages" style="height:600px;  display:flex; overflow-y:scroll; flex-direction:column-reverse;"></pre>
+            
+        </div>
         <input type="text" id="inputBox" placeholder="Please Type Here" style="display: block; width: 100%; margin-bottom: 7px; padding: 7px;"/>
         <div style="text-align: center;">
             <button class="btn btn-primary" id="send" type="submit">Send Message</button>
         </div>
     </div>
-    <script src="js/jquery.cookie.js" charset="utf-8"></script>
     <script src="js/jquery.js" charset="utf-8"></script>
     <script src="js/socket.io.js" charset="utf-8"></script>
     <script>
+        var socket = io();
+        var loggedIn;
+        const users = document.querySelector('#users');
+
+        function userClick (name) {
+                document.cookie = name;
+                socket.emit("username", name);
+                users.textContent = "";
+                socket.emit("GetClients", null, function(clients) {
+                    $.each(clients, function() {
+                        users.textContent += `${this.username}\n\n`;
+                    });
+                });
+                var iframe = document.querySelector('#ifrm');
+                iframe.parentNode.removeChild(iframe);
+                loggedIn = true;
+            }
+
         (function () {
-            var socket = io();
+            var username;
+            const iframe = document.querySelector('#ifrm');
+            const usernameButton = iframe.contentWindow.document.querySelector('#userButton');
+            const usernameInput = iframe.contentWindow.document.querySelector('#username');
             const button = document.querySelector('#send');
             const messages = document.querySelector('#messages');
+            
             const input = document.querySelector('#inputBox');
-
+            
             // Listens for a return keypress which simulates a button click
             input.addEventListener("keypress", function(event) {
                 if (event.key === 'Enter') {
-                    event.preventDefault();
-                    button.click();
+                    if (loggedIn === true) {
+                        event.preventDefault();
+                        button.click();
+                    }
                 }
             });
             
             // Sends message info to server when button is clicked
             button.onclick = function() {
-                socket.emit("message", input.value);
-                messages.textContent += `${input.value}\n\n`;
+                var msg = `${username}: ${input.value}`;
+                socket.emit("message", msg);
+                messages.textContent += `${msg}\n\n`;
                 input.value = '';
             }
 
@@ -43,6 +76,49 @@
             socket.on("message", function(msg) {
                 messages.textContent += `${msg}\n\n`;
             });
+
+            socket.on("username", function() {
+                users.textContent = "";
+                socket.emit("GetClients", null, function(clients) {
+                    $.each(clients, function() {
+                        users.textContent += `${this.username}\n\n`;
+                    });
+                });
+            });
+
+            socket.on("UserDisconnect", function() {
+                users.textContent = "";
+                socket.emit("GetClients", null, function(clients) {
+                    $.each(clients, function() {
+                        users.textContent += `${this.username}\n\n`;
+                    });
+                });
+            })
+
+            socket.on("retrievePast", function(docs) {
+                $.each(docs, function() {
+                    messages.textContent += `${this.text}\n\n`;
+                });
+            });
+
+            socket.on("connect", function() {
+                if (document.cookie !== "") {
+                    username = document.cookie;
+                    socket.emit("username", username);
+                    users.textContent = "";
+                    socket.emit("GetClients", null, function(clients) {
+                    $.each(clients, function() {
+                        users.textContent += `${this.username}\n\n`;
+                    });
+                });
+                    loggedIn = true;
+                    iframe.parentNode.removeChild(iframe);
+                } else {
+                    loggedIn = false;
+                    iframe.src = "username.html";
+                }
+            });
+
         })();
     </script>
 </body>
