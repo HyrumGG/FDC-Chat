@@ -16,7 +16,6 @@ app.use(express.static("public"));
         }
 
         socket.on("message", function(msg) {
-            db.insertOne({text:msg});
             socket.broadcast.emit("message", msg);
         });
 

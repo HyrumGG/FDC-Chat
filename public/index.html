@@ -28,6 +28,7 @@
     <script>
         var socket = io();
         var loggedIn;
+        var username;
         const users = document.querySelector('#users');
 
         function getCookie(cname) {
@@ -48,6 +49,7 @@
 
         function userClick (name) {
                 document.cookie = `username=${name}`;
+                username = name;
                 socket.emit("username", name);
                 users.textContent = "";
                 socket.emit("GetClients", null, function(clients) {
@@ -61,7 +63,6 @@
             }
 
         (function () {
-            var username;
             const iframe = document.querySelector('#ifrm');
             const usernameButton = iframe.contentWindow.document.querySelector('#userButton');
             const usernameInput = iframe.contentWindow.document.querySelector('#username');
