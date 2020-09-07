@@ -10,7 +10,7 @@ app.use(express.static("public"));
 
 const uri = "mongodb+srv://admin:FCXuaT7DA45SM4N@cluster0.il8as.mongodb.net/messages?retryWrites=true&w=majority";
 
-MongoClient.connect(uri, function(err, client) {
+MongoClient.connect(process.env.MONGODB_URI || uri, function(err, client) {
     const db = client.db('messages').collection('messages');
     connectedClients = [];
     
