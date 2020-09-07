@@ -7,7 +7,9 @@ http.listen(3000);
 
 app.use(express.static("public"));
 
-MongoClient.connect(process.env.MONGODB_URI, function(err, client) {
+const uri = "mongodb+srv://admin:FCXuaT7DA45SM4N@cluster0.il8as.mongodb.net/messages?retryWrites=true&w=majority";
+
+MongoClient.connect(uri, function(err, client) {
     const db = client.db('messages').collection('messages');
     connectedClients = [];
     
