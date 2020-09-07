@@ -7,15 +7,20 @@ http.listen(PORT);
 
 app.use(express.static("public"));
 
+    db = [];
     connectedClients = [];
     
     io.sockets.on("connection", function(socket) {
         console.log(`User Connected`);
+
+        socket.emit("retrievePast", db);
+
         if (connectedClients.indexOf(socket) === -1) {
             connectedClients.push(socket);
         }
 
         socket.on("message", function(msg) {
+            db.push({text:msg});
             socket.broadcast.emit("message", msg);
         });
 
