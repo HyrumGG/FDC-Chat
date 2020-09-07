@@ -103,12 +103,6 @@
                 });
             });
 
-            socket.on("retrievePast", function(docs) {
-                $.each(docs, function() {
-                    messages.textContent += `${this.text}\n\n`;
-                });
-            });
-
             socket.on("UserDisconnect", function() {
                 users.textContent = "";
                 socket.emit("GetClients", null, function(clients) {
