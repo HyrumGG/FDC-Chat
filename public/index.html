@@ -48,7 +48,7 @@
         }
 
         function userClick (name) {
-                document.cookie = `username=${name}`;
+                document.cookie = `username=${name}; expires=Thu, 18 Dec 2021 12:00:00 UTC`;
                 username = name;
                 socket.emit("username", name);
                 users.textContent = "";
