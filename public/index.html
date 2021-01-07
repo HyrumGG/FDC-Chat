@@ -47,20 +47,40 @@
             return "";
         }
 
-        function userClick (name) {
-                document.cookie = `username=${name}; expires=Thu, 18 Dec 2021 12:00:00 UTC`;
-                username = name;
-                socket.emit("username", name);
-                users.textContent = "";
-                socket.emit("GetClients", null, function(clients) {
-                    $.each(clients, function() {
-                        users.textContent += `${this.username}\n\n`;
-                    });
+        function userClick(name) {
+            document.cookie = `username=${name}; expires=Thu, 18 Dec 2021 12:00:00 UTC`;
+            username = name;
+            socket.emit("username", name);
+            users.textContent = "";
+            socket.emit("GetClients", null, function(clients) {
+                $.each(clients, function() {
+                    users.textContent += `${this.username}\n\n`;
                 });
-                var iframe = document.querySelector('#ifrm');
-                iframe.parentNode.removeChild(iframe);
-                loggedIn = true;
+            });
+            var iframe = document.querySelector('#ifrm');
+            iframe.parentNode.removeChild(iframe);
+            loggedIn = true;
+        }
+
+        function getTime(mill) {
+            var myDate = new Date(mill);
+            var curDate = new Date();
+            if (myDate.getFullYear() == curDate.getFullYear() && myDate.getMonth() == curDate.getMonth()
+                    && myDate.getDate() == curDate.getDate()) {
+                var hours = myDate.getHours();
+                var isPM = false;
+                if (hours - 12 > 0) {
+                    hours -= 12;
+                    isPM = true;
+                }
+                if (isPM) {
+                    return `Today at ${hours}:${myDate.getMinutes()} PM`;
+                } else {
+                    return `Today at ${hours}:${myDate.getMinutes()} AM`;
+                }
             }
+            return `${myDate.getDate()}/${myDate.getMonth()}/${myDate.getFullYear()}`;
+        }
 
         (function () {
             const iframe = document.querySelector('#ifrm');
@@ -84,7 +104,8 @@
             // Sends message info to server when button is clicked
             button.onclick = function() {
                 if (/\S/.test(input.value)) {
-                    var msg = `${username}: ${input.value}`;
+                    var myDate = getTime(new Date().getTime());
+                    var msg = `${username}: ${myDate}\n${input.value}`;
                     socket.emit("message", msg);
                     messages.textContent += `${msg}\n\n`;
                     input.value = '';
