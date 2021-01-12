@@ -76,9 +76,9 @@
                 minuteString = '0' + minutes;
             }
             if (isPM) {
-                return `${myDate.getDate()}/${myDate.getMonth()}/${myDate.getFullYear()} at ${hours}:${minuteString} PM`;
+                return `${myDate.getDate()}/${myDate.getMonth()+1}/${myDate.getFullYear()} at ${hours}:${minuteString} PM`;
             } else {
-                return `${myDate.getDate()}/${myDate.getMonth()}/${myDate.getFullYear()} at ${hours}:${minuteString} AM`;
+                return `${myDate.getDate()}/${myDate.getMonth()+1}/${myDate.getFullYear()} at ${hours}:${minuteString} AM`;
             }
         }
 
