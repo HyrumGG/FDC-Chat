@@ -64,22 +64,22 @@
 
         function getTime(mill) {
             var myDate = new Date(mill);
-            var curDate = new Date();
-            if (myDate.getFullYear() == curDate.getFullYear() && myDate.getMonth() == curDate.getMonth()
-                    && myDate.getDate() == curDate.getDate()) {
-                var hours = myDate.getHours();
-                var isPM = false;
-                if (hours - 12 > 0) {
-                    hours -= 12;
-                    isPM = true;
-                }
-                if (isPM) {
-                    return `Today at ${hours}:${myDate.getMinutes()} PM`;
-                } else {
-                    return `Today at ${hours}:${myDate.getMinutes()} AM`;
-                }
+            var hours = myDate.getHours();
+            var isPM = false;
+            if (hours - 12 > 0) {
+                hours -= 12;
+                isPM = true;
             }
-            return `${myDate.getDate()}/${myDate.getMonth()}/${myDate.getFullYear()}`;
+            var minutes = myDate.getMinutes();
+            var minuteString = "";
+            if (minutes < 10) {
+                minuteString = '0' + minutes;
+            }
+            if (isPM) {
+                return `${myDate.getDate()}/${myDate.getMonth()}/${myDate.getFullYear()} at ${hours}:${minuteString} PM`;
+            } else {
+                return `${myDate.getDate()}/${myDate.getMonth()}/${myDate.getFullYear()} at ${hours}:${minuteString} AM`;
+            }
         }
 
         (function () {
